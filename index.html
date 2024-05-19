@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Quiz Time</h1><br>
+    <h3>Direction: Analyze the following Question and select the right answer.</h3>
+    <h3>Reminder: If you click the "Next Question" it will be automatically counted as "wrong". </h3>
+    <h3>Goodluck!!</h3>
+    <div id="timer">Time left: 30 seconds</div>
+    <div id="quiz-container"></div>
+    <button id="next-question-button" onclick="nextQuestion()">Next Question</button>
+    <audio id="confetti-sound" src="confetti.mp3" preload="auto"></audio>
+    <script>
+        // Initialize the interval
+        let intervalId;
+
+        // Create the quiz
+        const quizContainer = document.getElementById('quiz-container');
+        let currentQuestionIndex = 0;
+        function createQuiz() {
+            quizContainer.innerHTML = '';
+            const questionEl = document.createElement('h2');
+            questionEl.textContent = questions[currentQuestionIndex].question;
+            quizContainer.appendChild(questionEl);
+            const optionsEl = document.createElement('div');
+            optionsEl.className = 'options';
+            for (let j = 0; j < questions[currentQuestionIndex].answers.length; j++) {
+                const answerEl = document.createElement('button');
+                answerEl.textContent = questions[currentQuestionIndex].answers[j];
+                answerEl.value = j;
+                answerEl.onclick = () => {
+                    questions[currentQuestionIndex].selected = j;
+                    clearInterval(intervalId);
+                    nextQuestion();
+                };
+                optionsEl.appendChild(answerEl);
+            }
+            quizContainer.appendChild(optionsEl);
+            startTimer();
+        }
+
+        // Shuffle the questions
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Start the timer
+        function startTimer() {
+            timeLeft = 30;
+            clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerHTML = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    clearInterval(intervalId);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        // Add a function to handle the end of the quiz
+        function endQuiz() {
+            clearInterval(intervalId);
+            quizContainer.innerHTML = '';
+            const scoreEl = document.createElement('h2');
+            scoreEl.id = 'score';
+            scoreEl.textContent = `Your score is ${calculateScore()} out of ${questions.length}`;
+            quizContainer.appendChild(scoreEl);
+            const restartEl = document.createElement('button');
+            restartEl.id = 'restart-button';
+            restartEl.textContent = 'Restart Quiz';
+            restartEl.onclick = createQuiz;
+            quizContainer.appendChild(restartEl);
+        }
+
+        // Call the endQuiz function when all questions have been answered
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                createQuiz();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // Calculate the score
+        function calculateScore() {
+            let score = 0;
+            questions.forEach(question => {
+                if (question.selected === question.correct) {
+                    score++;
+                }
+            });
+            return score;
+        }
+
+        // Quiz questions
+        const questions = [
+            {
+                question: 'Social Justice is the reasonable relationship between the individual and society.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Practicing equal treatment to each and every one in a community is an example of existing social justice.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Enjoying one’s wealth is a form of social justice.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Giving alms to the poor for your political agenda is a good practice for observing social justice.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Having a productive community is the significance of having social justice.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'Advocacy and participatory development seek to achieve change within a community.',
+                answers: ['True', 'False',],
+                selected: undefined
+            },
+            {
+                question: '----is a process wherein stakeholders can influence and share control over development.',
+                answers: ['Advocacy', 'Participatory Development','Human Rights','Gender Equality'],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: '----is someone who provides advocacy support when you need it',
+                answers: ['Equity', 'Participatory Development','Advocacy','Gender Equality'],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'All people should be treated equally.',
+                answers: ['In some case', 'In most case','In every case'],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'Killing is wrong.',
+                answers: ['In some case', 'In most case','In every case'],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'All people have the right to medical help if they are ill.',
+                answers: ['In some case', 'In most case','In every case'],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'All people have a right to education.',
+                answers: ['In some case', 'In most case','In every case'],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'People should be allowed to travel and leave the country if they wish.',
+                answers: ['In some case', 'In most case','In every case'],
+                correct: 1,
+                selected: undefined
+            },
+        ];
+
+        // Initialize the quiz
+        shuffle(questions);
+        createQuiz();
+
+        // Add a function to play the confetti sound
+        function playConfettiSound() {
+            const confettiSound = document.getElementById('confetti-sound');
+            confettiSound.play();
+        }
+    </script>
+</body>
+</html>
